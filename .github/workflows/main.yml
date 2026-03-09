@@ -1,0 +1,27 @@
+name: Update Playlist
+on:
+  schedule:
+    - cron: '0 * * * *' # Gira ogni ora
+  workflow_dispatch: # Permette di farlo partire a mano
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codice
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Installa dipendenze
+        run: pip install requests
+      - name: Esegui grabber
+        run: python grabber.py
+      - name: Salva i cambiamenti
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add playlist.m3u
+          git commit -m "Update playlist" || exit 0
+          git push
